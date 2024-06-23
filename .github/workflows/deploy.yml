@@ -1,0 +1,77 @@
+name: Deploy Strapi to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Install EC2 Instance Connect CLI
+        run: |
+          curl -O https://s3.amazonaws.com/ec2-instance-connect-linux/ec2-instance-connect-cli.zip
+          unzip ec2-instance-connect-cli.zip
+          sudo mv mssh /usr/local/bin/mssh
+
+      - name: Deploy to EC2
+        env:
+          KEY_PATH: ${{ secrets.EC2_KEY_PATH }}
+          INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+          USERNAME: ubuntu
+        run: |
+          # Get the public DNS name of the instance
+          PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query "Reservations[0].Instances[0].PublicDnsName" --output text)
+          
+          # Connect to the instance and execute commands
+          mssh -o StrictHostKeyChecking=no -i $KEY_PATH $USERNAME@$PUBLIC_DNS << 'EOF'
+          set -e
+
+          # Update and upgrade system
+          sudo apt-get update
+          sudo apt-get upgrade -y
+
+          # Install Node.js and npm
+          curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+
+          # Install yarn
+          sudo npm install -g yarn
+
+          # Navigate to the project directory
+          cd /path/to/your/project
+
+          # Pull the latest changes from the repository
+          git pull origin main
+
+          # Install project dependencies
+          yarn install
+
+          # Build the project
+          yarn build
+
+          # Start the Strapi server
+          pm2 restart strapi || pm2 start npm --name "strapi" -- start
+          EOF
