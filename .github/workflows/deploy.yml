@@ -63,7 +63,7 @@ jobs:
           sudo npm install -g pm2
 
           # Navigate to the project directory
-          cd /path/to/your/project
+          cd /home/ubuntu/strapi-project
 
           # Pull the latest changes from the repository
           git pull origin main
