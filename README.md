@@ -1,57 +1,84 @@
-# 🚀 Getting started with Strapi
+Step 1: Launch an EC2 Instance
+Sign in to AWS Console:
+    Open the AWS Management Console.
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+Navigate to EC2:
+In the AWS Management Console, search for "EC2" and select it.
 
-### `develop`
+Launch Instance:
+Click on "Instances" in the sidebar.
+Click the "Launch Instance" button.
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+Choose an Amazon Machine Image (AMI):
+Select an AMI.
+Choose an instance type based on your requirements.
+Click "Next: Configure Instance Details".
 
-```
-npm run develop
-# or
-yarn develop
-```
+Configure Instance Details:
+Configure instance details such as network settings, subnet etc.
 
-### `start`
+Click "Next: Add Storage".
+Add Storage
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+Configure storage settings for your instance.
+Click "Next: Add Tags".
 
-```
-npm run start
-# or
-yarn start
-```
+Add tags to your instance for better organization 
+Click "Next: Configure Security Group".
+Configure Security Group:
 
-### `build`
+Create a new security group or select an existing one.
+Configure inbound rules to allow SSH (port 22) and any other ports required by your Strapi application (e.g., HTTP, HTTPS).
+Click "Review and Launch".
+Review and Launch:
 
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
+Review your instance configuration.
+Click "Launch".
+Create or Select Key Pair:
 
-```
-npm run build
-# or
+Choose an existing key pair or create a new one.
+
+Launch Instance:
+Click "Launch Instances".
+Your EC2 instance will be launched.
+
+
+Step 2: Connect to EC2 Instance
+Open Terminal (or Command Prompt):
+
+Connect to EC2 Instance:
+Coonect your instance using EC2 connect
+Once connected, you'll be in the home directory by default.
+
+
+Step 3: Prepare EC2 Instance for Strapi
+Update the package manager on your EC2 instance:
+sudo yum update -y
+sudo yum install -y nodejs npm
+
+Install Yarn package manager globally:
+sudo npm install -g yarn
+
+Install PM2 globally for process management:
+sudo npm install -g pm2
+
+Clone your Strapi project from a Git repository:
+git clone https://github.com/username/your-strapi-project.git
+
+Navigate to your Strapi project directory and install dependencies:
+cd your-strapi-project
+yarn install
+
+Build your Strapi project if necessary:
 yarn build
-```
 
-## ⚙️ Deployment
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+Step 4: Start Strapi Server
+Start Strapi Server with PM2 : 
 
-## 📚 Learn more
+Use PM2 to start the Strapi server (replace your-strapi-project with your actual project name):
+pm2 start yarn --name "strapi" -- start
+This command starts the Strapi server using PM2, which ensures it runs in the background and restarts on system reboots.
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
-
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
-
-## ✨ Community
-
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
-
----
-
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+Access Strapi Admin Panel:
+Once the server is started, access the Strapi admin panel via a web browser 
